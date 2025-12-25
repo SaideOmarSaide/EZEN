@@ -14,7 +14,7 @@ export const initDB = (): Promise<IDBDatabase> => {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      const stores: EntityName[] = ['users', 'sales', 'products', 'expenses', 'suppliers', 'cash_sessions', 'cash_movements', 'receivables', 'payables', 'purchases'];
+      const stores: EntityName[] = ['sales', 'suppliers', 'cash_sessions', 'cash_movements', 'receivables', 'payables', 'purchases'];
       stores.forEach(storeName => {
         if (!db.objectStoreNames.contains(storeName)) {
           db.createObjectStore(storeName, { keyPath: 'id' });

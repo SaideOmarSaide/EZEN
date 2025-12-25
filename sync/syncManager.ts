@@ -5,7 +5,7 @@ import { Repository } from '../db/repository';
 import { supabase } from '../lib/supabase';
 
 // As defined in db/database.ts
-const ENTITY_STORES: EntityName[] = ['users', 'sales', 'products', 'expenses', 'suppliers', 'cash_sessions', 'cash_movements', 'receivables', 'payables', 'purchases'];
+const ENTITY_STORES: EntityName[] = ['sales', 'suppliers', 'cash_sessions', 'cash_movements', 'receivables', 'payables', 'purchases'];
 
 export class SyncManager {
   private static isSyncing = false;

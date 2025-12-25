@@ -1,11 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { User } from '../types';
-import { Repository } from '../db/repository';
 import { Logo } from '../components/Logo';
 import { supabase } from '../lib/supabase';
 
-const userRepo = new Repository<User>('users');
+
 
 interface AuthViewProps {
   onLoginSuccess: (user: User) => void;
@@ -56,15 +55,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, isOnline, in
         if (error) throw error;
 
         if (data.user) {
-          // Salvar perfil no IndexedDB para uso offline
-          const localUser = await userRepo.save({ 
-            id: data.user.id, // Usar ID do Supabase
-            name: formData.name, 
-            email: formData.email 
-          } as any);
-          
           setMessage({type: 'success', text: 'Conta criada! Verifique seu e-mail se necessário.'});
-          setTimeout(() => onLoginSuccess(localUser), 1500);
         }
       } else {
         // Modo Login
@@ -74,15 +65,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, isOnline, in
         });
 
         if (error) {
-          // Tentativa de login offline se falhar o Supabase
-          if (!isOnline) {
-             const users = await userRepo.getAll();
-             const user = users.find(u => u.email === formData.email && u.password === formData.password);
-             if (user) {
-               onLoginSuccess(user);
-               return;
-             }
-          }
+          
           throw error;
         }
 

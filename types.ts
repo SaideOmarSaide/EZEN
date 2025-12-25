@@ -11,7 +11,6 @@ export interface BaseEntity {
 export interface User extends BaseEntity {
   name: string;
   email: string;
-  password?: string;
 }
 
 export interface Sale extends BaseEntity {
@@ -79,7 +78,7 @@ export interface Purchase extends BaseEntity {
   invoiceNumber: string;
 }
 
-export type EntityName = 'users' | 'sales' | 'products' | 'expenses' | 'suppliers' | 'cash_sessions' | 'cash_movements' | 'receivables' | 'payables' | 'purchases';
+export type EntityName = 'sales' | 'suppliers' | 'cash_sessions' | 'cash_movements' | 'receivables' | 'payables' | 'purchases';
 
 export interface SyncAction {
   id: string; 
