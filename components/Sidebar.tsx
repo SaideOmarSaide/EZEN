@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Logo } from './Logo';
 
 interface SidebarProps {
   activeView: string;
@@ -43,11 +44,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-3">
-                <div className="bg-primary/20 flex items-center justify-center rounded-xl size-10 ring-1 ring-primary/30">
-                  <span className="material-symbols-outlined text-primary">storefront</span>
-                </div>
+                <Logo size={36} className="text-primary" />
                 <div className="flex flex-col">
-                  <h1 className="text-white text-base font-bold tracking-tight">MerceariaPro</h1>
+                  <h1 className="text-white text-base font-bold tracking-tight">EZEN</h1>
                   <p className="text-text-secondary text-[10px] font-bold uppercase tracking-wider">{userName}</p>
                 </div>
               </div>

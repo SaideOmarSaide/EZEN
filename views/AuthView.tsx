@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '../types';
 import { Repository } from '../db/repository';
+import { Logo } from '../components/Logo';
 
 const userRepo = new Repository<User>('users');
 
@@ -53,10 +54,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, isOnline, in
       <div className="hidden lg:flex lg:w-1/2 relative bg-background-dark border-r border-border-dark flex-col justify-between p-12 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#13ec5b20] via-transparent to-transparent"></div>
         <div className="relative z-20 flex items-center gap-3 text-white">
-          <div className="flex items-center justify-center size-10 rounded-xl bg-primary/10 text-primary">
-            <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
-          </div>
-          <span className="text-xl font-bold tracking-tight">MerceariaPro</span>
+          <Logo size={40} className="text-primary" />
+          <span className="text-xl font-bold tracking-tight">EZEN</span>
         </div>
         <div className="relative z-20 max-w-lg">
           <h2 className="text-4xl font-extrabold leading-tight mb-4 text-white">
@@ -69,88 +68,126 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, isOnline, in
              <div className="flex -space-x-3">
                {[1,2,3].map(i => <div key={i} className="size-10 rounded-full border-2 border-background-dark bg-surface-highlight"></div>)}
              </div>
-             <p className="text-sm text-text-secondary font-medium">Utilizado por centenas de gestores locais.</p>
+             <p className="text-sm font-bold text-white/50 uppercase tracking-widest leading-tight">
+               Utilizado por centenas <br/> de gestores eficientes
+             </p>
           </div>
         </div>
-        <div className="relative z-20 text-sm text-gray-500">© 2024 MerceariaPro • PWA & Offline-First</div>
+        <div className="relative z-20 text-[10px] text-gray-600 font-black uppercase tracking-[0.3em]">
+          EZEN Financeiro • Moçambique
+        </div>
       </div>
 
       {/* Coluna Direita: Formulário */}
-      <div className="w-full lg:w-1/2 flex flex-col bg-background-light dark:bg-surface-dark relative min-h-screen">
-        <div className="absolute top-6 left-6 lg:left-12">
-          {onBack && (
-            <button 
-              onClick={onBack}
-              className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors text-sm font-bold"
-            >
-              <span className="material-symbols-outlined text-base">arrow_back</span>
-              VOLTAR
-            </button>
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 relative">
+        <button 
+          onClick={onBack}
+          className="absolute top-8 left-8 flex items-center gap-2 text-text-secondary hover:text-primary transition-colors font-bold text-sm uppercase tracking-tighter"
+        >
+          <span className="material-symbols-outlined text-sm">arrow_back</span>
+          Voltar
+        </button>
+
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center lg:text-left">
+            <h1 className="text-3xl font-black text-white tracking-tight">
+              {authMode === 'login' ? 'Bem-vindo de volta' : 'Crie sua conta'}
+            </h1>
+            <p className="text-text-secondary mt-2">
+              {authMode === 'login' 
+                ? 'Acesse sua conta para gerenciar suas finanças.' 
+                : 'Comece agora a profissionalizar seu negócio.'}
+            </p>
+          </div>
+
+          {message && (
+            <div className={`p-4 rounded-xl text-sm font-bold border animate-in slide-in-from-top-2 ${
+              message.type === 'success' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-red-500/10 border-red-500/20 text-red-400'
+            }`}>
+              {message.text}
+            </div>
           )}
-        </div>
-        <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 py-12 overflow-y-auto">
-          <div className="w-full max-w-[440px] mx-auto space-y-8">
-            <div className="text-center space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {authMode === 'register' ? 'Crie sua conta' : 'Acesse sua conta'}
-              </h1>
-              <p className="text-slate-500 dark:text-gray-400">
-                {authMode === 'register' ? 'Comece a gerenciar seu negócio hoje.' : 'Bem-vindo de volta! Entre em sua conta.'}
-              </p>
+
+          <form onSubmit={handleAction} className="space-y-4">
+            {authMode === 'register' && (
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest pl-1">Nome Completo</label>
+                <input 
+                  required 
+                  type="text"
+                  value={formData.name}
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  className="w-full bg-surface-dark border border-border-dark rounded-xl px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary" 
+                  placeholder="Seu nome" 
+                />
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest pl-1">E-mail</label>
+              <input 
+                required 
+                type="email"
+                value={formData.email}
+                onChange={e => setFormData({...formData, email: e.target.value})}
+                className="w-full bg-surface-dark border border-border-dark rounded-xl px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary" 
+                placeholder="exemplo@email.com" 
+              />
             </div>
 
-            <div className="p-1 bg-background-dark/50 border border-border-dark rounded-xl flex shadow-inner">
-              <button onClick={() => setAuthMode('login')} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${authMode === 'login' ? 'bg-primary text-background-dark shadow-sm' : 'text-gray-400 hover:text-white'}`}>Login</button>
-              <button onClick={() => setAuthMode('register')} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${authMode === 'register' ? 'bg-primary text-background-dark shadow-sm' : 'text-gray-400 hover:text-white'}`}>Registrar</button>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest pl-1">Senha</label>
+              <div className="relative">
+                <input 
+                  required 
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={e => setFormData({...formData, password: e.target.value})}
+                  className="w-full bg-surface-dark border border-border-dark rounded-xl px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary" 
+                  placeholder="••••••••" 
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary hover:text-white"
+                >
+                  <span className="material-symbols-outlined text-sm">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                </button>
+              </div>
             </div>
 
-            {message && <div className={`p-4 rounded-xl text-xs font-bold border ${message.type === 'success' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>{message.text}</div>}
+            {authMode === 'register' && (
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest pl-1">Confirmar Senha</label>
+                <input 
+                  required 
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
+                  className="w-full bg-surface-dark border border-border-dark rounded-xl px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary" 
+                  placeholder="••••••••" 
+                />
+              </div>
+            )}
 
-            <form className="space-y-5" onSubmit={handleAction}>
-              {authMode === 'register' && (
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Nome Completo</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 material-symbols-outlined">person</span>
-                    <input required className="block w-full rounded-xl border-border-dark bg-input-dark py-3.5 pl-11 pr-4 text-white focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" placeholder="Ex: Ana Souza" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-                  </div>
-                </div>
-              )}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">E-mail</label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 material-symbols-outlined">mail</span>
-                  <input required type="email" className="block w-full rounded-xl border-border-dark bg-input-dark py-3.5 pl-11 pr-4 text-white focus:border-primary focus:ring-1 focus:ring-primary" placeholder="seu@email.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Senha</label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 material-symbols-outlined">lock</span>
-                  <input required type={showPassword ? 'text' : 'password'} className="block w-full rounded-xl border-border-dark bg-input-dark py-3.5 pl-11 pr-12 text-white focus:border-primary focus:ring-1 focus:ring-primary" placeholder="••••••••" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-white"><span className="material-symbols-outlined text-sm">{showPassword ? 'visibility_off' : 'visibility'}</span></button>
-                </div>
-              </div>
-              {authMode === 'register' && (
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Confirmar Senha</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 material-symbols-outlined">lock_reset</span>
-                    <input required type="password" className="block w-full rounded-xl border-border-dark bg-input-dark py-3.5 pl-11 pr-4 text-white focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" placeholder="Confirme sua senha" value={formData.confirmPassword} onChange={e => setFormData({...formData, confirmPassword: e.target.value})} />
-                  </div>
-                </div>
-              )}
-              <button type="submit" className="w-full py-4 px-4 rounded-xl shadow-lg text-sm font-black text-background-dark bg-primary hover:bg-primary-hover transition-all flex items-center justify-center gap-2 group">
-                {authMode === 'register' ? 'CRIAR MINHA CONTA' : 'ACESSAR PAINEL'}
-                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            <button 
+              type="submit"
+              className="w-full bg-primary text-background-dark py-4 rounded-xl font-black text-sm uppercase tracking-tighter shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform mt-4"
+            >
+              {authMode === 'login' ? 'Entrar no Sistema' : 'Criar minha conta'}
+            </button>
+          </form>
+
+          <div className="text-center pt-4">
+            <p className="text-sm text-text-secondary">
+              {authMode === 'login' ? 'Ainda não tem conta?' : 'Já possui uma conta?'}
+              <button 
+                onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+                className="ml-2 text-primary font-bold hover:underline"
+              >
+                {authMode === 'login' ? 'Registre-se' : 'Faça login'}
               </button>
-            </form>
-            <div className="flex items-center justify-between pt-4">
-               <div className="flex items-center gap-2">
-                  <div className={`size-2 rounded-full ${isOnline ? 'bg-primary' : 'bg-orange-400'}`}></div>
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{isOnline ? 'Conectado' : 'Modo Offline'}</span>
-               </div>
-            </div>
+            </p>
           </div>
         </div>
       </div>

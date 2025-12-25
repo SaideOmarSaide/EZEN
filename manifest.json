@@ -1,12 +1,11 @@
-
 {
-  "name": "Mercearia Financeiro",
-  "short_name": "Mercearia",
+  "name": "EZEN Financeiro",
+  "short_name": "EZEN",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#102216",
   "theme_color": "#13ec5b",
-  "description": "Sistema de gestão financeira offline-first",
+  "description": "Sistema de gestão financeira EZEN offline-first",
   "icons": [
     {
       "src": "https://picsum.photos/192/192",

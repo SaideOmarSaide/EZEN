@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'merceraria-pwa-v1';
+const CACHE_NAME = 'ezen-pwa-v1';
 const ASSETS = [
   '/',
   '/index.html',
@@ -29,7 +29,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Logic: Network first, fallback to cache for data. Cache first for static assets.
   const url = new URL(event.request.url);
   
   if (ASSETS.includes(url.pathname) || url.hostname.includes('fonts') || url.hostname.includes('tailwind')) {

@@ -1,5 +1,5 @@
 {
-  "name": "Mercearia Financeiro Offline-First",
-  "description": "Sistema de gestão financeira para mercearias com suporte total a funcionamento offline, persistência em IndexedDB e sincronização automática.",
+  "name": "EZEN Financeiro Offline-First",
+  "description": "Sistema de gestão financeira EZEN com suporte total a funcionamento offline, persistência em IndexedDB e sincronização automática.",
   "requestFramePermissions": []
 }
