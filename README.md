@@ -41,7 +41,7 @@ Execute o script SQL contido no diretório de documentação ou utilize o esquem
 ### 3. Instalação Local
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/ezen-financeiro.git
+git clone https://github.com/SaideOmarSaide/EZEN.git
 
 # Instale as dependências
 npm install
