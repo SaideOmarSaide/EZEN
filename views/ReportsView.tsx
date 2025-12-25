@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { User } from '../types';
 import { Sidebar } from '../components/Sidebar';
 
-export const ReportsView = ({ user, setView }: any) => {
+export const ReportsView = ({ user, setView, isOnline, isSyncing }: any) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -15,6 +15,8 @@ export const ReportsView = ({ user, setView }: any) => {
         handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        isOnline={isOnline}
+        isSyncing={isSyncing}
       />
       
       <main className="flex-1 flex flex-col h-full overflow-y-auto p-4 lg:p-8 gap-6">

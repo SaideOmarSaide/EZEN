@@ -7,7 +7,7 @@ import { Sidebar } from '../components/Sidebar';
 
 const receivableRepo = new Repository<Receivable>('receivables');
 
-export const ReceivablesView = ({ user, setView, isOnline }: any) => {
+export const ReceivablesView = ({ user, setView, isOnline, isSyncing }: any) => {
   const [receivables, setReceivables] = useState<Receivable[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -39,7 +39,7 @@ export const ReceivablesView = ({ user, setView, isOnline }: any) => {
       
       setIsModalOpen(false);
       await loadData();
-      SyncManager.processQueue();
+      SyncManager.sync();
     } catch (err) {
       console.error(err);
     } finally {
@@ -50,7 +50,7 @@ export const ReceivablesView = ({ user, setView, isOnline }: any) => {
   const handleMarkAsReceived = async (id: string) => {
     await receivableRepo.update(id, { status: 'received' });
     await loadData();
-    SyncManager.processQueue();
+    SyncManager.sync();
   };
 
   return (
@@ -62,6 +62,8 @@ export const ReceivablesView = ({ user, setView, isOnline }: any) => {
         handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        isOnline={isOnline}
+        isSyncing={isSyncing}
       />
       
       <main className="flex-1 flex flex-col h-full overflow-y-auto p-4 lg:p-8 gap-6">

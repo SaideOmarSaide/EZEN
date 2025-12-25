@@ -8,7 +8,7 @@ import { Sidebar } from '../components/Sidebar';
 const payableRepo = new Repository<Payable>('payables');
 const supplierRepo = new Repository<Supplier>('suppliers');
 
-export const PayablesView = ({ user, setView, isOnline }: any) => {
+export const PayablesView = ({ user, setView, isOnline, isSyncing }: any) => {
   const [payables, setPayables] = useState<Payable[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,7 +62,7 @@ export const PayablesView = ({ user, setView, isOnline }: any) => {
       setIsModalOpen(false);
       setSupplierSearch('');
       await loadData();
-      SyncManager.processQueue();
+      SyncManager.sync();
     } catch (err) {
       console.error(err);
     } finally {
@@ -73,7 +73,15 @@ export const PayablesView = ({ user, setView, isOnline }: any) => {
   const handleMarkAsPaid = async (id: string) => {
     await payableRepo.update(id, { status: 'paid' });
     await loadData();
-    SyncManager.processQueue();
+    SyncManager.sync();
+  };
+
+  const handleDeletePayable = async (id: string) => {
+    if (confirm('Tem certeza que deseja excluir esta conta? A ação não pode ser desfeita.')) {
+      await payableRepo.delete(id);
+      await loadData();
+      SyncManager.sync();
+    }
   };
 
   const filteredSuppliers = suppliers.filter(s => 
@@ -89,6 +97,8 @@ export const PayablesView = ({ user, setView, isOnline }: any) => {
         handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        isOnline={isOnline}
+        isSyncing={isSyncing}
       />
       
       <main className="flex-1 flex flex-col h-full overflow-y-auto p-4 lg:p-8 gap-6">
@@ -151,11 +161,16 @@ export const PayablesView = ({ user, setView, isOnline }: any) => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {p.status !== 'paid' && (
-                        <button onClick={() => handleMarkAsPaid(p.id)} className="text-primary hover:bg-primary/10 p-2 rounded-lg transition-colors" title="Marcar como Pago">
-                          <span className="material-symbols-outlined">check_circle</span>
+                      <div className="flex items-center justify-end gap-2">
+                        {p.status !== 'paid' && (
+                          <button onClick={() => handleMarkAsPaid(p.id)} className="text-primary hover:bg-primary/10 p-2 rounded-lg transition-colors" title="Marcar como Pago">
+                            <span className="material-symbols-outlined">check_circle</span>
+                          </button>
+                        )}
+                        <button onClick={() => handleDeletePayable(p.id)} className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors" title="Excluir">
+                          <span className="material-symbols-outlined">delete</span>
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))}

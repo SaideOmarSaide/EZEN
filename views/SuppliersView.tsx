@@ -12,10 +12,11 @@ const payableRepo = new Repository<Payable>('payables');
 interface SuppliersViewProps {
   user: User;
   isOnline: boolean;
+  isSyncing: boolean;
   setView: (view: any) => void;
 }
 
-export const SuppliersView: React.FC<SuppliersViewProps> = ({ user, isOnline, setView }) => {
+export const SuppliersView: React.FC<SuppliersViewProps> = ({ user, isOnline, isSyncing, setView }) => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(null);
   const [history, setHistory] = useState<{purchases: Purchase[], payables: Payable[]}>({ purchases: [], payables: [] });
@@ -65,7 +66,7 @@ export const SuppliersView: React.FC<SuppliersViewProps> = ({ user, isOnline, se
       });
       if (form) form.reset();
       await loadSuppliers();
-      SyncManager.processQueue();
+      SyncManager.sync();
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +107,7 @@ export const SuppliersView: React.FC<SuppliersViewProps> = ({ user, isOnline, se
 
       setIsPurchaseModalOpen(false);
       await loadHistory(selectedSupplierId);
-      SyncManager.processQueue();
+      SyncManager.sync();
     } finally {
       setIsLoading(false);
     }
@@ -146,6 +147,8 @@ export const SuppliersView: React.FC<SuppliersViewProps> = ({ user, isOnline, se
         handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        isOnline={isOnline}
+        isSyncing={isSyncing}
       />
       
       <main className="flex-1 flex flex-col h-full overflow-y-auto p-4 lg:p-8 gap-6">

@@ -9,7 +9,7 @@ const sessionRepo = new Repository<CashSession>('cash_sessions');
 const salesRepo = new Repository<Sale>('sales');
 const movementRepo = new Repository<CashMovement>('cash_movements');
 
-export const CashierView = ({ user, setView, isOnline }: any) => {
+export const CashierView = ({ user, setView, isOnline, isSyncing }: any) => {
   const [activeSession, setActiveSession] = useState<CashSession | null>(null);
   const [sessionSales, setSessionSales] = useState<Sale[]>([]);
   const [sessionMovements, setSessionMovements] = useState<CashMovement[]>([]);
@@ -61,7 +61,7 @@ export const CashierView = ({ user, setView, isOnline }: any) => {
       });
       setIsOpeningModal(false);
       await loadSession();
-      SyncManager.processQueue();
+      SyncManager.sync();
     } catch (err) {
       console.error(err);
     } finally {
@@ -86,7 +86,7 @@ export const CashierView = ({ user, setView, isOnline }: any) => {
       setSaleQty(1);
       setSalePrice(0);
       await loadSession();
-      SyncManager.processQueue();
+      SyncManager.sync();
     } catch (err) {
       console.error(err);
     } finally {
@@ -109,7 +109,7 @@ export const CashierView = ({ user, setView, isOnline }: any) => {
       });
       setMovementModal({ open: false, type: null });
       await loadSession();
-      SyncManager.processQueue();
+      SyncManager.sync();
     } catch (err) {
       console.error(err);
     } finally {
@@ -144,6 +144,8 @@ export const CashierView = ({ user, setView, isOnline }: any) => {
         handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }} 
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        isOnline={isOnline}
+        isSyncing={isSyncing}
       />
       
       <main className="flex-1 flex flex-col h-full overflow-y-auto p-4 lg:p-8 gap-6">

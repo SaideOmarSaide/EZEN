@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Logo } from './Logo';
+import { SyncManager } from '../sync/syncManager';
 
 interface SidebarProps {
   activeView: string;
@@ -9,6 +10,8 @@ interface SidebarProps {
   handleLogout: () => void;
   isOpen?: boolean;
   onClose?: () => void;
+  isOnline: boolean;
+  isSyncing: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
@@ -17,7 +20,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userName, 
   handleLogout, 
   isOpen = false, 
-  onClose 
+  onClose,
+  isOnline,
+  isSyncing
 }) => {
   const handleNavClick = (view: any) => {
     setView(view);
@@ -71,14 +76,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           <div className="px-2 border-t border-border-dark pt-4">
-            <div className="p-3 rounded-xl bg-surface-highlight/30 mb-4 lg:hidden">
-                <p className="text-[10px] text-text-secondary font-black uppercase mb-1">Status</p>
-                <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-primary animate-pulse"></div>
-                    <span className="text-xs font-bold text-white">Sincronizado</span>
-                </div>
-            </div>
-            <button onClick={handleLogout} className="flex w-full items-center gap-3 px-3 py-3 rounded-xl text-text-secondary hover:bg-red-500/10 hover:text-red-400 transition-colors">
+            <SyncStatus isOnline={isOnline} isSyncing={isSyncing} />
+            <button onClick={handleLogout} className="flex w-full items-center gap-3 px-3 py-3 rounded-xl text-text-secondary hover:bg-red-500/10 hover:text-red-400 transition-colors mt-2">
               <span className="material-symbols-outlined">logout</span>
               <span className="text-sm font-bold uppercase tracking-tighter">Sair do Sistema</span>
             </button>
@@ -105,3 +104,48 @@ const NavItem = ({ icon, label, active, onClick }: any) => (
     <span className="text-sm font-bold tracking-tight">{label}</span>
   </button>
 );
+
+const SyncStatus = ({ isOnline, isSyncing }: { isOnline: boolean, isSyncing: boolean }) => {
+  const getStatus = () => {
+    if (isSyncing) return {
+      text: 'Sincronizando...',
+      icon: 'sync',
+      color: 'text-blue-400',
+      pulse: true
+    };
+    if (isOnline) return {
+      text: 'Sincronizado',
+      icon: 'cloud_done',
+      color: 'text-primary',
+      pulse: false
+    };
+    return {
+      text: 'Offline',
+      icon: 'cloud_off',
+      color: 'text-orange-400',
+      pulse: false
+    };
+  };
+
+  const status = getStatus();
+
+  return (
+    <div className="p-3 rounded-xl bg-surface-highlight/30 mb-2">
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] text-text-secondary font-black uppercase mb-1">Status</p>
+        <button 
+          onClick={() => SyncManager.sync()} 
+          disabled={isSyncing || !isOnline}
+          className="text-text-secondary hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span className={`material-symbols-outlined text-base ${isSyncing ? 'animate-spin' : ''}`}>sync</span>
+        </button>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className={`size-2 rounded-full ${isSyncing ? 'bg-blue-400 animate-pulse' : isOnline ? 'bg-primary' : 'bg-orange-400'}`}></div>
+        <span className={`text-xs font-bold ${status.color}`}>{status.text}</span>
+      </div>
+      <p className="text-[9px] text-gray-600 font-bold mt-1">Última: há 2 min</p> 
+    </div>
+  );
+};

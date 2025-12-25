@@ -109,4 +109,48 @@ export class Repository<T extends BaseEntity> {
   async updateStatus(id: string, status: T['syncStatus']): Promise<void> {
     return this.update(id, { syncStatus: status } as Partial<T>);
   }
+
+  async delete(id: string): Promise<void> {
+    // 1. Add to sync queue
+    const syncQueue = await getStore('sync_queue', 'readwrite');
+    const syncAction: SyncAction = {
+      id: crypto.randomUUID(),
+      entityName: this.entityName,
+      entityId: id,
+      action: 'DELETE',
+      payload: { id },
+      timestamp: new Date().toISOString()
+    };
+
+    await new Promise<void>((resolve, reject) => {
+      const request = syncQueue.add(syncAction);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+    
+    // 2. Delete from main store
+    const store = await getStore(this.entityName, 'readwrite');
+    await new Promise<void>((resolve, reject) => {
+      const request = store.delete(id);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async bulkUpsert(items: T[]): Promise<void> {
+    const store = await getStore(this.entityName, 'readwrite');
+    const transaction = store.transaction;
+
+    return new Promise<void>((resolve, reject) => {
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+
+      items.forEach(item => {
+        // Here we explicitly set syncStatus to 'synced'
+        // because we assume data coming from the server is the source of truth.
+        const itemToUpsert: T = { ...item, syncStatus: 'synced' };
+        store.put(itemToUpsert);
+      });
+    });
+  }
 }

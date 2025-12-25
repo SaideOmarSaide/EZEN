@@ -9,7 +9,7 @@ const payableRepo = new Repository<Payable>('payables');
 const receivableRepo = new Repository<Receivable>('receivables');
 const movementRepo = new Repository<CashMovement>('cash_movements');
 
-export const DashboardView = ({ user, setView }: any) => {
+export const DashboardView = ({ user, setView, isOnline, isSyncing }: any) => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [payables, setPayables] = useState<Payable[]>([]);
   const [receivables, setReceivables] = useState<Receivable[]>([]);
@@ -102,6 +102,8 @@ export const DashboardView = ({ user, setView }: any) => {
         handleLogout={handleLogout}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        isOnline={isOnline}
+        isSyncing={isSyncing}
       />
       
       <main className="flex-1 flex flex-col h-full overflow-y-auto p-4 lg:p-8">

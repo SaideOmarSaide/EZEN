@@ -19,8 +19,12 @@ export default function App() {
   const [initialAuthMode, setInitialAuthMode] = useState<'login' | 'register'>('login');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
+    // Gerenciador de status da Sincronização
+    SyncManager.onSyncStatusChange = setIsSyncing;
+    
     const handleStatus = () => setIsOnline(navigator.onLine);
     window.addEventListener('online', handleStatus);
     window.addEventListener('offline', handleStatus);
@@ -39,6 +43,8 @@ export default function App() {
           updatedAt: new Date().toISOString(),
           syncStatus: 'synced'
         } as User);
+        // Iniciar sincronização completa
+        SyncManager.sync();
       } else {
         // Tentar recuperar do localStorage se estiver offline (cache local)
         const savedUser = localStorage.getItem('finmanager_user');
@@ -51,7 +57,6 @@ export default function App() {
         }
       }
       setIsInitializing(false);
-      SyncManager.processQueue();
     }
 
     checkSession();
@@ -59,7 +64,6 @@ export default function App() {
     // Ouvir mudanças na autenticação (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        // Fix: Explicitly type as User to avoid 'syncStatus: string' error on line 69
         const user: User = {
           id: session.user.id,
           name: session.user.user_metadata.full_name || 'Usuário',
@@ -80,6 +84,7 @@ export default function App() {
       window.removeEventListener('online', handleStatus);
       window.removeEventListener('offline', handleStatus);
       subscription.unsubscribe();
+      SyncManager.onSyncStatusChange = null;
     };
   }, []);
 
@@ -87,6 +92,7 @@ export default function App() {
     setCurrentUser(user);
     localStorage.setItem('finmanager_user', JSON.stringify(user));
     setView('dashboard');
+    SyncManager.sync(); // Trigger sync after login
   };
 
   const startAuth = (mode: 'login' | 'register' = 'login') => {
@@ -117,14 +123,20 @@ export default function App() {
   }
 
   const renderView = () => {
+    const commonProps = {
+      user: currentUser,
+      isOnline,
+      isSyncing,
+      setView
+    };
     switch (view) {
-      case 'dashboard': return <DashboardView user={currentUser} setView={setView} />;
-      case 'suppliers': return <SuppliersView user={currentUser} isOnline={isOnline} setView={setView} />;
-      case 'payables': return <PayablesView user={currentUser} isOnline={isOnline} setView={setView} />;
-      case 'receivables': return <ReceivablesView user={currentUser} isOnline={isOnline} setView={setView} />;
-      case 'cashier': return <CashierView user={currentUser} isOnline={isOnline} setView={setView} />;
-      case 'reports': return <ReportsView user={currentUser} setView={setView} />;
-      default: return <DashboardView user={currentUser} setView={setView} />;
+      case 'dashboard': return <DashboardView {...commonProps} />;
+      case 'suppliers': return <SuppliersView {...commonProps} />;
+      case 'payables': return <PayablesView {...commonProps} />;
+      case 'receivables': return <ReceivablesView {...commonProps} />;
+      case 'cashier': return <CashierView {...commonProps} />;
+      case 'reports': return <ReportsView {...commonProps} />;
+      default: return <DashboardView {...commonProps} />;
     }
   };
 
