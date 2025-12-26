@@ -93,7 +93,7 @@ export class Repository<T extends BaseEntity> {
         entityName: this.entityName,
         entityId: id,
         action: 'UPDATE',
-        payload: updates,
+        payload: updatedEntity,
         timestamp: now
       };
       
