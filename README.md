@@ -68,11 +68,12 @@ A aplicação utiliza um padrão de **Fila de Sincronização**:
 1.  Toda alteração (Create/Update/Delete) é salva no `IndexedDB` e uma "Action" é adicionada à store `sync_queue`.
 2.  O `SyncManager` detecta o evento `online` do navegador.
 3.  As ações são enviadas para o Supabase usando `upsert` para garantir idempotência.
-4.  Após a confirmação do servidor, o registro local é marcado como `synced` e removido da fila.
+4.  Após a confirmação do servidor, o registro local é marcado como `synced` e removido da fila. 
 
 ## 📄 Licença
 
-Este projeto é desenvolvido para o ecossistema EZEN Moçambique. Todos os direitos reservados.
+Este projeto é desenvolvido para o ecossistema EZEN. Todos os direitos reservados.
 
 ---
 **Desenvolvido com foco em resiliência e performance.**
+
