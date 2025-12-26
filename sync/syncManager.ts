@@ -87,27 +87,53 @@ export class SyncManager {
 
     for (const entityName of ENTITY_STORES) {
       try {
-        const { data, error } = await supabase
+        // 1. Fetch all data from remote
+        const { data: remoteData, error } = await supabase
           .from(entityName)
           .select('*')
           .eq('user_id', userId);
 
         if (error) throw error;
 
-        if (data && data.length > 0) {
-          console.log(`[Sync] Fetched ${data.length} records from '${entityName}'.`);
-          const repo = new Repository<any>(entityName);
-          await repo.bulkUpsert(data);
+        const repo = new Repository<any>(entityName);
+
+        if (remoteData) {
+          // 2. Get remote IDs
+          const remoteIds = new Set(remoteData.map(item => item.id));
+
+          // 3. Get local data
+          const localData = await repo.getAll();
+          const localIdsToDelete = [];
+
+          // 4. Find local items that are no longer on the server
+          for (const localItem of localData) {
+            // Delete local item if it's not on the server and not pending creation
+            if (!remoteIds.has(localItem.id) && localItem.syncStatus !== 'pending') {
+              localIdsToDelete.push(localItem.id);
+            }
+          }
+
+          // 5. Perform local deletion
+          if (localIdsToDelete.length > 0) {
+            console.log(`[Sync] Deleting ${localIdsToDelete.length} stale local records from '${entityName}'.`);
+            await repo.bulkLocalDelete(localIdsToDelete);
+          }
+
+          // 6. Upsert remote data into local store
+          if (remoteData.length > 0) {
+            console.log(`[Sync] Fetched ${remoteData.length} records from '${entityName}'.`);
+            await repo.bulkUpsert(remoteData);
+          }
         }
       } catch (err) {
         console.error(`[Sync] Error pulling table '${entityName}':`, err);
-         if (!navigator.onLine) {
+        if (!navigator.onLine) {
           console.log('[Sync] Offline, stopping pull process.');
           throw new Error("Network offline, stopping sync.");
         }
       }
     }
-     console.log(`[Sync] Finished pulling remote changes.`);
+    console.log(`[Sync] Finished pulling remote changes.`);
   }
 
   private static async sendToBackend(action: SyncAction, userId: string) {

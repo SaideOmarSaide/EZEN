@@ -137,6 +137,20 @@ export class Repository<T extends BaseEntity> {
     });
   }
 
+  async bulkLocalDelete(ids: string[]): Promise<void> {
+    const store = await getStore(this.entityName, 'readwrite');
+    const transaction = store.transaction;
+
+    return new Promise<void>((resolve, reject) => {
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+
+      ids.forEach(id => {
+        store.delete(id);
+      });
+    });
+  }
+
   async bulkUpsert(items: T[]): Promise<void> {
     const store = await getStore(this.entityName, 'readwrite');
     const transaction = store.transaction;
