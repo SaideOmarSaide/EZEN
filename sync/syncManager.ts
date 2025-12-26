@@ -120,7 +120,7 @@ export class SyncManager {
         id: action.entityId,
         ...action.payload,
         user_id: userId,
-        updated_at: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
     }
 
