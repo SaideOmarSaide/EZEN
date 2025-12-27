@@ -1,0 +1,100 @@
+Analisando o código do `CashierView.tsx`, vejo que **Entradas** e **Saídas** são movimentações de caixa diferentes de vendas:
+
+## Diferença Principal
+
+- **ENTRADA**: Dinheiro que **entra** no caixa (mas não vem de vendas)
+- **SAÍDA**: Dinheiro que **sai** do caixa (sangrias, despesas)
+
+## Exemplos Práticos em Moçambique
+
+### ENTRADAS (dinheiro que entra):
+- Suprimento de troco inicial
+- Devolução de vale
+- Reembolso de despesa
+- Empréstimo/Capital adicional
+
+### SAÍDAS (dinheiro que sai):
+- Sangria (retirada de segurança)
+- Pagamento a fornecedor em dinheiro
+- Despesas operacionais (luz, água)
+- Vale para funcionário
+
+## Placeholders Sugeridos
+
+Aqui está a correção para o código com placeholders coerentes:E também podemos melhorar as opções de categoria para ficarem mais específicas:## Resumo das Mudanças
+
+✅ **Placeholders dinâmicos** que mudam conforme o tipo de movimentação  
+✅ **Categorias separadas** para entrada vs saída  
+✅ **Exemplos contextuais** que ajudam o usuário a entender o que registrar
+
+Agora o sistema está mais claro e coerente com o fluxo de caixa real de um comércio em Moçambique! 🇲🇿
+
+
+Analisando o fluxo de caixa de um comércio típico em Moçambique, aqui estão as categorias correspondentes e mais comuns:
+
+## 📥 ENTRADAS (Dinheiro que ENTRA no caixa)
+
+| Categoria | Descrição | Exemplo Prático |
+|-----------|-----------|-----------------|
+| **Suprimento de Troco** | Dinheiro adicional para dar troco | "Trouxe 5.000 MT do banco para trocos" |
+| **Reembolso** | Devolução de vale ou adiantamento | "João devolveu vale de 500 MT" |
+| **Capital Adicional** | Injeção de capital do dono | "Proprietário depositou 10.000 MT" |
+| **Devolução de Fornecedor** | Crédito/devolução de mercadoria | "Fornecedor devolveu 2.000 MT de produto errado" |
+| **Outros** | Entradas diversas | "Venda de embalagens vazias 150 MT" |
+
+## 📤 SAÍDAS (Dinheiro que SAI do caixa)
+
+| Categoria | Descrição | Exemplo Prático |
+|-----------|-----------|-----------------|
+| **Sangria** | Retirada de segurança | "Retirei 20.000 MT para depósito no banco" |
+| **Despesa Operacional** | Contas fixas do negócio | "Pagamento de EDM 3.500 MT" |
+| **Pagamento a Fornecedor** | Compra ou acerto em dinheiro | "Paguei fornecedor Lda 15.000 MT" |
+| **Vale/Adiantamento** | Empréstimo a funcionário | "Vale Maria 1.000 MT" |
+| **Transporte** | Frete, combustível | "Gasolina para entregas 800 MT" |
+| **Manutenção** | Reparos e consertos | "Conserto da geladeira 2.500 MT" |
+| **Outros** | Saídas diversas | "Taxa municipal 500 MT" |
+
+## 🎯 Sugestão de Implementação Melhorada## 💡 Exemplos de Uso Real
+
+### Cenário 1: Início do Dia
+```
+ENTRADA → Suprimento de Troco
+Valor: 5.000 MT
+Descrição: "Troco inicial trazido do banco"
+```
+
+### Cenário 2: Meio do Dia
+```
+SAÍDA → Sangria
+Valor: 15.000 MT
+Descrição: "Retirada de segurança - muito dinheiro em gaveta"
+```
+
+### Cenário 3: Pagamento Urgente
+```
+SAÍDA → Despesa Operacional
+Valor: 3.200 MT
+Descrição: "Fatura EDM vencida"
+```
+
+### Cenário 4: Fornecedor Passa na Loja
+```
+SAÍDA → Pagamento a Fornecedor
+Valor: 8.500 MT
+Descrição: "Acerto com Distribuidora Matola Lda"
+```
+
+As categorias agora estão mais detalhadas e alinhadas com a realidade operacional de um comércio moçambicano! 🇲🇿✅
+
+<div className="space-y-1">
+                <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest pl-1">Motivo / Descrição</label>
+                <input 
+                  required 
+                  name="descricao" 
+                  className="w-full bg-background-dark border border-border-dark rounded-2xl px-4 py-3 text-white focus:ring-1 focus:ring-primary shadow-inner" 
+                  placeholder={movementModal.type === 'entrance' 
+                    ? "Ex: Suprimento de troco, Reembolso..." 
+                    : "Ex: Sangria, Pagamento fornecedor, Despesa operacional..."
+                  }
+                />
+              </div>

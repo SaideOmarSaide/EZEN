@@ -434,15 +434,38 @@ export const CashierView = ({ user, setView, isOnline, isSyncing }: any) => {
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest pl-1">Motivo / Descrição</label>
-                <input required name="descricao" className="w-full bg-background-dark border border-border-dark rounded-2xl px-4 py-3 text-white focus:ring-1 focus:ring-primary shadow-inner" placeholder="Ex: Pagamento de fornecedor, Suprimento de troco..." />
+                <input 
+                  required 
+                  name="descricao" 
+                  className="w-full bg-background-dark border border-border-dark rounded-2xl px-4 py-3 text-white focus:ring-1 focus:ring-primary shadow-inner" 
+                  placeholder={movementModal.type === 'entrance' 
+                    ? "Ex: Suprimento de troco, Reembolso..." 
+                    : "Ex: Sangria, Pagamento fornecedor, Despesa operacional..."
+                  }
+                />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest pl-1">Categoria</label>
                 <select name="categoria" className="w-full bg-background-dark border border-border-dark rounded-2xl px-4 py-3 text-white">
-                  <option value="suprimento">Suprimento (Entrada de Troco)</option>
-                  <option value="despesa">Despesa Operacional</option>
-                  <option value="sangria">Sangria (Retirada de Segurança)</option>
-                  <option value="outros">Outros</option>
+                  {movementModal.type === 'entrance' ? (
+                    <>
+                      <option value="suprimento_de_troco">Suprimento de Troco</option>
+                      <option value="reembolso">Reembolso</option>
+                      <option value="capital_adicional">Capital Adicional</option>
+                      <option value="devolucao_de_fornecedor">Devolução de Fornecedor</option>
+                      <option value="outros">Outros</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="sangria">Sangria</option>
+                      <option value="despesa_operacional">Despesa Operacional</option>
+                      <option value="pagamento_a_fornecedor">Pagamento a Fornecedor</option>
+                      <option value="vale_adiantamento">Vale/Adiantamento</option>
+                      <option value="transporte">Transporte</option>
+                      <option value="manutencao">Manutenção</option>
+                      <option value="outros">Outros</option>
+                    </>
+                  )}
                 </select>
               </div>
             </div>
