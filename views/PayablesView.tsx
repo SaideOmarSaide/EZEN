@@ -15,6 +15,9 @@ export const PayablesView = ({ user, setView, isOnline, isSyncing }: any) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
+  const [isDeletePayableModalOpen, setIsDeletePayableModalOpen] = useState(false);
+  const [payableToDeleteId, setPayableToDeleteId] = useState<string | null>(null);
+
   const [supplierSearch, setSupplierSearch] = useState('');
   const [showSupplierDropdown, setShowSupplierDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -76,17 +79,31 @@ export const PayablesView = ({ user, setView, isOnline, isSyncing }: any) => {
     SyncManager.sync();
   };
 
-  const handleDeletePayable = async (id: string) => {
-    if (confirm('Tem certeza que deseja excluir esta conta? A ação não pode ser desfeita.')) {
-      await payableRepo.delete(id);
+  const handleDeletePayable = (id: string) => {
+    setPayableToDeleteId(id);
+    setIsDeletePayableModalOpen(true);
+  };
+
+  const confirmDeletePayable = async () => {
+    if (!payableToDeleteId || isSaving) return;
+    setIsSaving(true);
+    try {
+      await payableRepo.delete(payableToDeleteId);
+      setIsDeletePayableModalOpen(false);
+      setPayableToDeleteId(null);
       await loadData();
       SyncManager.sync();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const filteredSuppliers = suppliers.filter(s => 
     s.name.toLowerCase().includes(supplierSearch.toLowerCase())
   ).slice(0, 5);
+
 
   return (
     <div className="flex h-screen w-full bg-background-light dark:bg-background-dark font-display overflow-hidden text-white">
@@ -266,6 +283,34 @@ export const PayablesView = ({ user, setView, isOnline, isSyncing }: any) => {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* MODAL: CONFIRMAÇÃO DE EXCLUSÃO DE CONTA A PAGAR */}
+      {isDeletePayableModalOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background-dark/90 backdrop-blur-md p-4">
+          <div className="bg-surface-dark w-full max-w-md rounded-3xl border border-border-dark shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-6 border-b border-border-dark bg-red-500/10 flex justify-between items-center">
+              <h3 className="text-lg font-black uppercase tracking-tight flex items-center gap-2 text-red-400">
+                <span className="material-symbols-outlined">delete_forever</span>
+                Confirmar Exclusão
+              </h3>
+              <button type="button" onClick={() => setIsDeletePayableModalOpen(false)} className="text-text-secondary hover:text-white p-2">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="p-8 text-center">
+              <p className="text-text-secondary mb-8">Tem a certeza que quer excluir esta conta a pagar? Esta ação é irreversível.</p>
+            </div>
+            <div className="p-6 bg-[#152a1d]/50 border-t border-border-dark grid grid-cols-2 gap-4">
+              <button onClick={() => setIsDeletePayableModalOpen(false)} className="w-full bg-white/5 text-white py-4 rounded-2xl font-black text-base hover:bg-white/10 transition-colors" disabled={isSaving}>
+                CANCELAR
+              </button>
+              <button onClick={confirmDeletePayable} className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-base shadow-lg shadow-red-500/20 hover:scale-[1.02] transition-transform" disabled={isSaving}>
+                {isSaving ? 'A EXCLUIR...' : 'SIM, EXCLUIR'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
