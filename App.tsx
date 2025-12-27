@@ -10,11 +10,12 @@ import { ReceivablesView } from './views/ReceivablesView';
 import { CashierView } from './views/CashierView';
 import { ReportsView } from './views/ReportsView';
 import { LandingView } from './views/LandingView';
+import { FinancialEducationView } from './views/FinancialEducationView';
 import { supabase } from './lib/supabase';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [view, setView] = useState<'dashboard' | 'reports' | 'cashier' | 'receivables' | 'payables' | 'suppliers'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'reports' | 'cashier' | 'receivables' | 'payables' | 'suppliers' | 'financial_education'>('dashboard');
   const [unauthView, setUnauthView] = useState<'landing' | 'auth'>('landing');
   const [initialAuthMode, setInitialAuthMode] = useState<'login' | 'register'>('login');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -136,6 +137,7 @@ export default function App() {
       case 'receivables': return <ReceivablesView {...commonProps} />;
       case 'cashier': return <CashierView {...commonProps} />;
       case 'reports': return <ReportsView {...commonProps} />;
+      case 'financial_education': return <FinancialEducationView {...commonProps} />;
       default: return <DashboardView {...commonProps} />;
     }
   };

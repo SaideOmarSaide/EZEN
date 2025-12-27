@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function FinancialEducationPage() {
+export const FinancialEducationView = () => {
   const [activeModule, setActiveModule] = useState('intro');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
 
@@ -108,7 +108,7 @@ export default function FinancialEducationPage() {
           icon: 'calculate',
           title: 'Quanto Fiado é Seguro?',
           content: 'Regra prática: Fiados não devem passar de 20% do seu faturamento mensal. Se você vende 100.000 MT/mês, máximo 20.000 MT em fiados.',
-          example: 'Se você tem 35.000 MT em fiados mas só vende 50.000 MT/mês, PARE de dar fiado até receber uns 15.000 MT de volta!'
+          example: 'Se você tem 35.000 MT em fiados mas só vende 50.000 MT/mes, PARE de dar fiado até receber uns 15.000 MT de volta!'
         }
       ],
       tips: [

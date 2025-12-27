@@ -5,7 +5,7 @@ import { SyncManager } from '../sync/syncManager';
 
 interface SidebarProps {
   activeView: string;
-  setView: (view: any) => void;
+  setView: (view: 'dashboard' | 'reports' | 'cashier' | 'receivables' | 'payables' | 'suppliers' | 'financial_education') => void;
   userName: string;
   handleLogout: () => void;
   isOpen?: boolean;
@@ -72,6 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <NavItem icon="group" label="Contas a Receber" active={activeView === 'receivables'} onClick={() => handleNavClick('receivables')} />
               <NavItem icon="business_center" label="Fornecedores" active={activeView === 'suppliers'} onClick={() => handleNavClick('suppliers')} />
               <NavItem icon="analytics" label="Relatórios" active={activeView === 'reports'} onClick={() => handleNavClick('reports')} />
+              <NavItem icon="school" label="Educação Financeira" active={activeView === 'financial_education'} onClick={() => handleNavClick('financial_education')} />
             </nav>
           </div>
 
