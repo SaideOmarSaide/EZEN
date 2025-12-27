@@ -16,6 +16,7 @@ export const CashierView = ({ user, setView, isOnline, isSyncing }: any) => {
   const [isOpeningModal, setIsOpeningModal] = useState(false);
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
   const [movementModal, setMovementModal] = useState<{ open: boolean, type: 'entrance' | 'exit' | null }>({ open: false, type: null });
+  const [isCloseSessionModalOpen, setIsCloseSessionModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
@@ -117,6 +118,21 @@ export const CashierView = ({ user, setView, isOnline, isSyncing }: any) => {
     }
   };
 
+  const handleCloseCash = async () => {
+    if (isProcessing || !activeSession) return;
+    setIsProcessing(true);
+    try {
+      await sessionRepo.update(activeSession!.id, { status: 'closed', closingTime: new Date().toISOString() });
+      setIsCloseSessionModalOpen(false);
+      await loadSession();
+      SyncManager.sync();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const totals = useMemo(() => {
     const salesInCash = sessionSales.filter(s => s.paymentMethod === 'cash').reduce((a, c) => a + (c.total ?? 0), 0);
     const otherSales = sessionSales.filter(s => s.paymentMethod !== 'cash').reduce((a, c) => a + (c.total ?? 0), 0);
@@ -177,7 +193,7 @@ export const CashierView = ({ user, setView, isOnline, isSyncing }: any) => {
                   <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest leading-none">Sessão Ativa</p>
                   <p className="text-xs font-bold text-white">{new Date(activeSession.openingTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                </div>
-               <button onClick={async () => { if(confirm('Fechar caixa?')) { await sessionRepo.update(activeSession!.id, { status: 'closed', closingTime: new Date().toISOString() }); loadSession(); } }} className="bg-red-500/10 text-red-400 border border-red-500/20 px-4 py-2 rounded-lg text-xs font-black hover:bg-red-500/20 transition-colors uppercase">FECHAR</button>
+               <button onClick={() => setIsCloseSessionModalOpen(true)} className="bg-red-500/10 text-red-400 border border-red-500/20 px-4 py-2 rounded-lg text-xs font-black hover:bg-red-500/20 transition-colors uppercase">FECHAR</button>
              </div>
           )}
         </div>
@@ -475,6 +491,34 @@ export const CashierView = ({ user, setView, isOnline, isSyncing }: any) => {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* MODAL: FECHAR CAIXA CONFIRMATION */}
+      {isCloseSessionModalOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background-dark/90 backdrop-blur-md p-4">
+          <div className="bg-surface-dark w-full max-w-md rounded-3xl border border-border-dark shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-6 border-b border-border-dark bg-red-500/10 flex justify-between items-center">
+              <h3 className="text-lg font-black uppercase tracking-tight flex items-center gap-2 text-red-400">
+                <span className="material-symbols-outlined">lock</span>
+                Encerrar Sessão de Caixa
+              </h3>
+              <button type="button" onClick={() => setIsCloseSessionModalOpen(false)} className="text-text-secondary hover:text-white p-2">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="p-8 text-center">
+              <p className="text-text-secondary mb-8">Tem a certeza que quer fechar o caixa? Esta ação irá finalizar a sessão atual e calcular o balanço final. Não poderá registrar mais vendas ou movimentações nesta sessão.</p>
+            </div>
+            <div className="p-6 bg-[#152a1d]/50 border-t border-border-dark grid grid-cols-2 gap-4">
+              <button onClick={() => setIsCloseSessionModalOpen(false)} className="w-full bg-white/5 text-white py-4 rounded-2xl font-black text-base hover:bg-white/10 transition-colors" disabled={isProcessing}>
+                CANCELAR
+              </button>
+              <button onClick={handleCloseCash} className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-base shadow-lg shadow-red-500/20 hover:scale-[1.02] transition-transform" disabled={isProcessing}>
+                {isProcessing ? 'A FECHAR...' : 'SIM, FECHAR'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
