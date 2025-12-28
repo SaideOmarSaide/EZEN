@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export const FinancialEducationView = () => {
   const [activeModule, setActiveModule] = useState('intro');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeModule]);
 
   const modules = [
     { id: 'intro', icon: 'school', title: 'Introdução', color: 'primary' },
