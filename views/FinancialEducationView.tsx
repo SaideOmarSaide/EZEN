@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export const FinancialEducationView = () => {
+export const FinancialEducationView = ({ setView }: any) => {
   const [activeModule, setActiveModule] = useState('intro');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
 
@@ -438,7 +438,7 @@ export const FinancialEducationView = () => {
             Agora que você aprendeu os fundamentos, está na hora de colocar em prática! 
             Comece hoje mesmo a transformar a gestão do seu negócio.
           </p>
-          <button className="bg-[#13ec5b] text-[#102216] px-8 py-4 rounded-xl font-black text-lg hover:bg-[#0fb845] transition-colors shadow-lg shadow-[#13ec5b]/20">
+          <button onClick={() => setView('dashboard')} className="bg-[#13ec5b] text-[#102216] px-8 py-4 rounded-xl font-black text-lg hover:bg-[#0fb845] transition-colors shadow-lg shadow-[#13ec5b]/20">
             ABRIR O EZEN AGORA
           </button>
         </div>
