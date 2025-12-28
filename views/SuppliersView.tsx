@@ -16,7 +16,7 @@ interface SuppliersViewProps {
   setView: (view: any) => void;
 }
 
-export const SuppliersView: React.FC<SuppliersViewProps> = ({ user, isOnline, isSyncing, setView }) => {
+export const SuppliersView: React.FC<SuppliersViewProps> = ({ user, isOnline, isSyncing, setView, handleLogout }) => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(null);
   const [history, setHistory] = useState<{purchases: Purchase[], payables: Payable[]}>({ purchases: [], payables: [] });
@@ -144,7 +144,7 @@ export const SuppliersView: React.FC<SuppliersViewProps> = ({ user, isOnline, is
         activeView="suppliers" 
         setView={setView} 
         userName={user.name} 
-        handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }}
+
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         isOnline={isOnline}

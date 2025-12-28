@@ -7,7 +7,7 @@ import { Sidebar } from '../components/Sidebar';
 
 const receivableRepo = new Repository<Receivable>('receivables');
 
-export const ReceivablesView = ({ user, setView, isOnline, isSyncing }: any) => {
+export const ReceivablesView = ({ user, setView, isOnline, isSyncing, handleLogout }: any) => {
   const [receivables, setReceivables] = useState<Receivable[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -59,7 +59,7 @@ export const ReceivablesView = ({ user, setView, isOnline, isSyncing }: any) => 
         activeView="receivables" 
         setView={setView} 
         userName={user.name} 
-        handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }}
+
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         isOnline={isOnline}

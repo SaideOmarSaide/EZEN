@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { User } from '../types';
 import { Sidebar } from '../components/Sidebar';
 
-export const ReportsView = ({ user, setView, isOnline, isSyncing }: any) => {
+export const ReportsView = ({ user, setView, isOnline, isSyncing, handleLogout }: any) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -12,7 +12,7 @@ export const ReportsView = ({ user, setView, isOnline, isSyncing }: any) => {
         activeView="reports" 
         setView={setView} 
         userName={user.name} 
-        handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }}
+
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         isOnline={isOnline}

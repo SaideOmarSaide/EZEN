@@ -101,6 +101,13 @@ export default function App() {
     setUnauthView('auth');
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    // The onAuthStateChange listener in the useEffect hook will automatically
+    // handle clearing currentUser and localStorage, and the UI will update accordingly.
+    // No explicit window.location.reload() or localStorage.removeItem() is needed here.
+  };
+
   if (isInitializing) {
     return (
       <div className="flex h-screen w-full bg-background-dark items-center justify-center">
@@ -128,7 +135,8 @@ export default function App() {
       user: currentUser,
       isOnline,
       isSyncing,
-      setView
+      setView,
+      handleLogout
     };
     switch (view) {
       case 'dashboard': return <DashboardView {...commonProps} />;

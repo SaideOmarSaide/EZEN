@@ -9,7 +9,7 @@ const payableRepo = new Repository<Payable>('payables');
 const receivableRepo = new Repository<Receivable>('receivables');
 const movementRepo = new Repository<CashMovement>('cash_movements');
 
-export const DashboardView = ({ user, setView, isOnline, isSyncing }: any) => {
+export const DashboardView = ({ user, setView, isOnline, isSyncing, handleLogout }: any) => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [payables, setPayables] = useState<Payable[]>([]);
   const [receivables, setReceivables] = useState<Receivable[]>([]);
@@ -80,10 +80,7 @@ export const DashboardView = ({ user, setView, isOnline, isSyncing }: any) => {
     return combined.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 10);
   }, [sales, payables, movements]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('finmanager_user');
-    window.location.reload();
-  };
+
 
   if (loading) {
     return (

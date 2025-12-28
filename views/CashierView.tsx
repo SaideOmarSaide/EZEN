@@ -9,7 +9,7 @@ const sessionRepo = new Repository<CashSession>('cash_sessions');
 const salesRepo = new Repository<Sale>('sales');
 const movementRepo = new Repository<CashMovement>('cash_movements');
 
-export const CashierView = ({ user, setView, isOnline, isSyncing }: any) => {
+export const CashierView = ({ user, setView, isOnline, isSyncing, handleLogout }: any) => {
   const [activeSession, setActiveSession] = useState<CashSession | null>(null);
   const [sessionSales, setSessionSales] = useState<Sale[]>([]);
   const [sessionMovements, setSessionMovements] = useState<CashMovement[]>([]);
@@ -157,7 +157,7 @@ export const CashierView = ({ user, setView, isOnline, isSyncing }: any) => {
         activeView="cashier" 
         setView={setView} 
         userName={user.name} 
-        handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }} 
+        handleLogout={handleLogout}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         isOnline={isOnline}

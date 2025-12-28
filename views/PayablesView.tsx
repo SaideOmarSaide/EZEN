@@ -8,7 +8,7 @@ import { Sidebar } from '../components/Sidebar';
 const payableRepo = new Repository<Payable>('payables');
 const supplierRepo = new Repository<Supplier>('suppliers');
 
-export const PayablesView = ({ user, setView, isOnline, isSyncing }: any) => {
+export const PayablesView = ({ user, setView, isOnline, isSyncing, handleLogout }: any) => {
   const [payables, setPayables] = useState<Payable[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -111,7 +111,7 @@ export const PayablesView = ({ user, setView, isOnline, isSyncing }: any) => {
         activeView="payables" 
         setView={setView} 
         userName={user.name} 
-        handleLogout={() => { localStorage.removeItem('finmanager_user'); window.location.reload(); }}
+
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         isOnline={isOnline}
