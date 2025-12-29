@@ -28,6 +28,10 @@ export default defineConfig(({ mode }) => {
               },
             ],
           },
+          workbox: {
+            globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif}'],
+            navigateFallback: '/index.html',
+          }
         }),
       ],
       define: {
