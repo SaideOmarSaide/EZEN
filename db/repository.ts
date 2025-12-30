@@ -1,5 +1,4 @@
-
-import { BaseEntity, EntityName, SyncAction } from '../types';
+import { BaseEntity, EntityName, SyncAction, CashSession, Sale, CashMovement } from '../types';
 import { getStore } from './database';
 
 export class Repository<T extends BaseEntity> {
@@ -168,3 +167,47 @@ export class Repository<T extends BaseEntity> {
     });
   }
 }
+
+
+export const getClosedCashierSessions = async (): Promise<CashSession[]> => {
+  const store = await getStore('cash_sessions');
+  return new Promise((resolve, reject) => {
+    const request = store.getAll();
+    request.onsuccess = () => {
+      const sessions = request.result as CashSession[];
+      resolve(sessions.filter(s => s.status === 'closed'));
+    };
+    request.onerror = () => reject(request.error);
+  });
+};
+
+export const getCashierSessionWithDetails = async (sessionId: string) => {
+  const sessionRepo = new Repository<CashSession>('cash_sessions');
+  const salesRepo = new Repository<Sale>('sales');
+  const movementRepo = new Repository<CashMovement>('cash_movements');
+
+  const session = await sessionRepo.getById(sessionId);
+  if (!session) {
+    return null;
+  }
+
+  const [allSales, allMovements] = await Promise.all([
+    salesRepo.getAll(),
+    movementRepo.getAll()
+  ]);
+
+  const sessionSales = allSales.filter(s => {
+    const saleTime = new Date(s.createdAt).getTime();
+    const startTime = new Date(session.openingTime).getTime();
+    const endTime = session.closingTime ? new Date(session.closingTime).getTime() : Infinity;
+    return saleTime >= startTime && saleTime <= endTime;
+  });
+
+  const sessionMovements = allMovements.filter(m => m.sessionId === session.id);
+
+  return {
+    session,
+    sales: sessionSales,
+    movements: sessionMovements,
+  };
+};

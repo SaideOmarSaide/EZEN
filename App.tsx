@@ -11,16 +11,40 @@ import { CashierView } from './views/CashierView';
 import { ReportsView } from './views/ReportsView';
 import { LandingView } from './views/LandingView';
 import { FinancialEducationView } from './views/FinancialEducationView';
+import CashierHistoryView from './views/CashierHistoryView';
 import { supabase } from './lib/supabase';
+
+type ViewName = 'dashboard' | 'reports' | 'cashier' | 'receivables' | 'payables' | 'suppliers' | 'financial_education' | 'cashier_history';
+
+type View =
+  | { name: 'dashboard' }
+  | { name: 'reports' }
+  | { name: 'cashier' }
+  | { name: 'receivables' }
+  | { name: 'payables' }
+  | { name: 'suppliers' }
+  | { name: 'financial_education' }
+  | { name: 'cashier_history' }
+  | { name: 'cashier_history_details', sessionId: string };
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [view, setView] = useState<'dashboard' | 'reports' | 'cashier' | 'receivables' | 'payables' | 'suppliers' | 'financial_education'>('dashboard');
+  const [view, setViewInternal] = useState<View>({ name: 'dashboard' });
   const [unauthView, setUnauthView] = useState<'landing' | 'auth'>('landing');
   const [initialAuthMode, setInitialAuthMode] = useState<'login' | 'register'>('login');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  const setView = (newView: View | ViewName) => {
+    if (typeof newView === 'string') {
+      // Handle simple string-based navigation for backward compatibility
+      setViewInternal({ name: newView } as View);
+    } else {
+      // Handle object-based navigation
+      setViewInternal(newView);
+    }
+  };
 
   useEffect(() => {
     // Gerenciador de status da Sincronização
@@ -138,7 +162,7 @@ export default function App() {
       setView,
       handleLogout
     };
-    switch (view) {
+    switch (view.name) {
       case 'dashboard': return <DashboardView {...commonProps} />;
       case 'suppliers': return <SuppliersView {...commonProps} />;
       case 'payables': return <PayablesView {...commonProps} />;
@@ -146,6 +170,15 @@ export default function App() {
       case 'cashier': return <CashierView {...commonProps} />;
       case 'reports': return <ReportsView {...commonProps} />;
       case 'financial_education': return <FinancialEducationView {...commonProps} />;
+      case 'cashier_history': return <CashierHistoryView {...commonProps} />;
+      case 'cashier_history_details':
+        return (
+          <CashierView
+            {...commonProps}
+            isReadOnly={true}
+            sessionId={view.sessionId}
+          />
+        );
       default: return <DashboardView {...commonProps} />;
     }
   };
