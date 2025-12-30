@@ -11,7 +11,7 @@ import { CashierView } from './views/CashierView';
 import { ReportsView } from './views/ReportsView';
 import { LandingView } from './views/LandingView';
 import { FinancialEducationView } from './views/FinancialEducationView';
-import CashierHistoryView from './views/CashierHistoryView';
+import { CashierHistoryView } from './views/CashierHistoryView';
 import { supabase } from './lib/supabase';
 
 type ViewName = 'dashboard' | 'reports' | 'cashier' | 'receivables' | 'payables' | 'suppliers' | 'financial_education' | 'cashier_history';
@@ -24,8 +24,7 @@ type View =
   | { name: 'payables' }
   | { name: 'suppliers' }
   | { name: 'financial_education' }
-  | { name: 'cashier_history' }
-  | { name: 'cashier_history_details', sessionId: string };
+  | { name: 'cashier_history' };
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -171,14 +170,6 @@ export default function App() {
       case 'reports': return <ReportsView {...commonProps} />;
       case 'financial_education': return <FinancialEducationView {...commonProps} />;
       case 'cashier_history': return <CashierHistoryView {...commonProps} />;
-      case 'cashier_history_details':
-        return (
-          <CashierView
-            {...commonProps}
-            isReadOnly={true}
-            sessionId={view.sessionId}
-          />
-        );
       default: return <DashboardView {...commonProps} />;
     }
   };

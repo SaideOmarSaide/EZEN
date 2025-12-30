@@ -10,6 +10,7 @@ const ENTITY_STORES: EntityName[] = ['sales', 'suppliers', 'cash_sessions', 'cas
 export class SyncManager {
   private static isSyncing = false;
   public static onSyncStatusChange: ((isSyncing: boolean) => void) | null = null;
+  private static syncTimeout: NodeJS.Timeout | null = null;
 
   private static setSyncing(status: boolean) {
     this.isSyncing = status;
@@ -18,7 +19,17 @@ export class SyncManager {
     }
   }
 
-  static async sync() {
+  static sync() {
+    if (this.syncTimeout) {
+      clearTimeout(this.syncTimeout);
+    }
+    
+    this.syncTimeout = setTimeout(() => {
+      this.executeSyncInternal();
+    }, 1000);
+  }
+
+  private static async executeSyncInternal() {
     if (this.isSyncing || !navigator.onLine) return;
 
     const { data: { session } } = await supabase.auth.getSession();

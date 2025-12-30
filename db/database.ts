@@ -2,7 +2,7 @@
 import { EntityName } from '../types';
 
 const DB_NAME = 'FinManagerDB';
-const DB_VERSION = 6; // Incrementado para store de purchases
+const DB_VERSION = 7; // Incrementado para adicionar índices
 
 export const initDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -17,7 +17,18 @@ export const initDB = (): Promise<IDBDatabase> => {
       const stores: EntityName[] = ['sales', 'suppliers', 'cash_sessions', 'cash_movements', 'receivables', 'payables', 'purchases'];
       stores.forEach(storeName => {
         if (!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName, { keyPath: 'id' });
+          const objectStore = db.createObjectStore(storeName, { keyPath: 'id' });
+          objectStore.createIndex('createdAt', 'createdAt', { unique: false });
+          objectStore.createIndex('syncStatus', 'syncStatus', { unique: false });
+
+          if (storeName === 'sales') {
+            objectStore.createIndex('paymentMethod', 'paymentMethod', { unique: false });
+          }
+          
+          if (storeName === 'cash_movements') {
+            objectStore.createIndex('sessionId', 'sessionId', { unique: false });
+            objectStore.createIndex('type', 'type', { unique: false });
+          }
         }
       });
 
